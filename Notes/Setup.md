@@ -1,7 +1,7 @@
 ---
-title: Untitled
+title: Setup
 author: chan
-date: 2026-10-24T09:45:32Z
+date: 2026-10-27T11:00:42Z
 ---
 
 # System Setup
@@ -23,7 +23,8 @@ ODACHI
         │   ├── Quickshell (Omarchy shell)
         │   ├── Zen Browser
         │   │   ├── uBlock Origin
-        │   │   ├── Vimium
+        │   │   ├── Croc
+        │   │   ├── Pintrest No Guest
         │   │   ├── DuckDuckGo No-AI Search
         │   │   ├── Old Reddit Redirect
         │   │   ├── Youtube Shorts Blocker
@@ -45,9 +46,9 @@ ODACHI
             │   ├── pi-context-view
             │   └── pi-hermes-memory
             ├── Yazi
-            ├── Croc
+            ├── Croc , Pass Cliq
             ├── Git
-            ├── GitHub CLI (gh)
+            ├── GitHub CLI (gh)            
             └── Docker
 
 RUNNING WOLF

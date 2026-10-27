@@ -11,6 +11,7 @@ Downloads the best quality media from a post link. Each site has its own script 
 |------|--------|
 | Tumblr | `sites/tumblr.py` |
 | Pinterest | `sites/pinterest.py` |
+| Behance | `sites/behance.py` |
 
 If the site is not in the table, say so. Do not guess.
 
@@ -73,3 +74,24 @@ python3 <this-skill-dir>/sites/pinterest.py "<pin-url>" [out-dir]
 - Fallback: the `og:image` meta tag only gives a capped size (e.g. `736x`). Swap that path segment for `originals` to get the full-size file: `https://i.pinimg.com/736x/ab/cd/ef/<hash>.jpg` -> `https://i.pinimg.com/originals/ab/cd/ef/<hash>.jpg`.
 - Video pins: the HTML has `"videoUrls":[...]`, a list starting with a direct `.mp4` (720p) before the `.m3u8` (HLS) entries. Take the first `.mp4`.
 - If Pinterest changes the page and neither `images_orig` nor `og:image` nor `videoUrls` appear, the script fails loudly rather than guessing.
+
+## Behance
+
+Run with the project link:
+
+```
+python3 <this-skill-dir>/sites/behance.py "<project-url>" [out-dir]
+```
+
+- Default out-dir: `~/Downloads`.
+- Gets **every** image in the project, at full original resolution (not the capped 1400px preview).
+- Files are named `behance_<last 6 digits of project id>_<n>.<ext>`, in page order. Prints the path of each saved file.
+- Works with `behance.net/gallery/<id>/<slug>` links.
+
+### How it works (if the script fails)
+
+- Behance sits behind Akamai bot protection. A plain request gets a 403 page that sets a cookie called `js_challenge_value` via JavaScript, then reloads. Curl can't run that JS, but it can read the cookie value straight out of the 403 body and resend it on a second request — that passes.
+- This value has been a **fixed constant**, not per-session, so the script sends it up front on the first request and only falls back to extracting a fresh one if that stops working (Behance may rotate it later).
+- The real page HTML has the images under `project_modules/<size>/<file>`. Sizes seen: `max_158`, `max_316`, `max_632`, `1400`, `2800`, `hd`, `fs`, `max_3840`, and `source` — `source` is the original upload, same filename as the other tiers, just swap the folder.
+- The HTML is partly JSON-escaped (`\/` instead of `/`) — unescape before matching paths.
+- Headless Chromium does **not** work here as a fallback the way it does for other sites: Behance detects it and never renders the real page at all (empty shell, no title, no images). The cookie-replay trick above is the only approach that works.
